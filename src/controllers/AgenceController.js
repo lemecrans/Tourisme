@@ -70,7 +70,7 @@ exports.getAll = async (req, res, next) =>{
 exports.signup = (req, res, next) => {
  
     let Agences = new Agence(req.body)
-        Agence.save((err,doc)=>{
+        Agences.save((err,doc)=>{
          if (!err){
              console.log("atoo");
              res.send(doc);
