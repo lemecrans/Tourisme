@@ -7,12 +7,8 @@ const schema = new Schema({
     password: { type: String, required: true, },
     contact: { type: String, },
     descriptionAgence: { type: String, required: true, },
-    publication: [{
-        description: { type: String, required: true, },
-        photo: { type: [String], required: true, },
-    },
-    ],
-    Site: { type: String, required: true, },   
+    Site: { type: String, required: true, },
+    image: { type: String, },
 }, { timestamps: true });
 
 module.exports = Agence = mongoose.model('Agence', schema)
