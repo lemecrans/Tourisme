@@ -2,31 +2,45 @@ const agenceDb = require('../db/agence.db');
 const Agence = require('../models/agence');
 
 exports.login = (req, res, next) => {
-    Agence.findOne({ email: {$eq:req.body.email} })
-      .then(user => {
-          if (!user) {
-            return res.status(401).json({ error: 'Utilisateur non trouvé !' });
-          }
-          bcrypt.compare(req.body.password, user.password)
-              .then(valid => {
-                  if (!valid) {
-                      return res.status(401).json({ error: 'Mot de passe incorrect !' });
-                  }
-                  console.log("mety");
-                  res.status(200).json({
-                      userId: user._id,
-                      token: jwt.sign(
-                          { userId: user._id },
-                          'RANDOM_TOKEN_SECRET',
-                          { expiresIn: '24h' }
-                      )
-                  });
-              })
-              .catch(error => res.status(500).json({ error }));
-      })
-      .catch(error => res.status(500).json({ error }));
-};
+    console.log('Login agence');
+    Agence.findOne({ email: { $eq: req.body.email } })
+        .then(user => {
+            if (!user) {
+                return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+            }
+            bcrypt.compare(req.body.password, user.password)
+                .then(valid => {
+                    if (!valid) {
+                        return res.status(401).json({ error: 'Mot de passe incorrect !' });
+                    }
 
+                    // Utilisateur et mot de passe valides, maintenant récupérez le modèle AgenceModel associé à l'utilisateur
+                    // Vous pouvez utiliser le modèle User ici, supposons que vous avez une propriété agenceId dans votre schéma User
+                    
+                    Agence.findById(user._id)
+                        .then(agenceModel => {
+                            console.log(agenceModel)
+                            if (!agenceModel) {
+                                return res.status(401).json({ error: "Modèle Agence introuvable pour cet utilisateur !" });
+                            }
+
+                            // Envoi du modèle AgenceModel dans la réponse JSON
+                            res.status(200).json({
+                                userId: user._id,
+                                // token: jwt.sign(
+                                //     { userId: user._id },
+                                //     'RANDOM_TOKEN_SECRET',
+                                //     { expiresIn: '24h' }
+                                // ),
+                                agenceModel: agenceModel // Ajoutez le modèle AgenceModel à la réponse JSON
+                            });
+                        })
+                        .catch(error => res.status(500).json({ error }));
+                })
+                .catch(error => res.status(500).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
+};
 exports.generateData = async (req, res, next) =>{
     try {
         console.log('generate Agence')
@@ -68,23 +82,32 @@ exports.getAll = async (req, res, next) =>{
 }
 
 exports.signup = (req, res, next) => {
- 
-    let Agences = new Agence(req.body)
-        Agences.save((err,doc)=>{
-         if (!err){
-             console.log("atoo");
-             res.send(doc);
-         }
-     else {
-         if (err.code == 11000)
-             res.status(422).send(['Duplicate email adrress found.']);
-         else
-             return next(err);
-     }
-         // .then(Userclients => {res.json({ message: 'Compte créé !' })})
-         // .catch(error => {res.json({ message : error.message })});
- })
- }
+    console.log('Inscription');
+
+    bcrypt.hash(req.body.password, 10)
+        .then(hash => {
+            let agenceRegister = new Agence({
+                email: req.body.email,
+                password: hash,
+                designation: req.body.designation,
+                contact: req.body.contact,
+                descriptionAgence: req.body.descriptionAgence,
+            });
+
+            agenceRegister.save((err, doc) => {
+                if (!err) {
+                    console.log("Inscription réussie");
+                    res.send(doc);
+                } else {
+                    if (err.code == 11000)
+                        res.status(422).send(['Duplicate email address found.']);
+                    else
+                        return next(err);
+                }
+            });
+        })
+        .catch(error => res.status(500).json({ error }));
+};
  
 
 // exports.insertAgence = async (req, res, next) =>{
