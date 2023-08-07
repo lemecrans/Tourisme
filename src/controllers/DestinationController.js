@@ -27,6 +27,20 @@ exports.getById = async (req, res, next) =>{
         res.status(500).json({ msg: error })
     }
 }
+exports.search = async (req, res, next) =>{
+    const searchTerm = req.params.titre; // Le terme de recherche est obtenu à partir des paramètres de requête (URL)
+
+    try {
+        const query = { titre: { $regex: searchTerm, $options: 'i' } };
+        const result = await Agence.find(query);
+
+        res.json(result);
+    } catch (error) {
+        console.error('Please Retry...', error);
+        res.status(500).json({ error: 'An error occurred ease Retry...' });
+    }
+    
+}
 
 exports.getAll = async (req, res, next) =>{
     try {

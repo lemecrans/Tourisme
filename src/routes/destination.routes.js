@@ -12,6 +12,9 @@ router.get('/:id', Controll.getById);
 // localhost:3000/api/agence/
 router.get('/', Controll.getAll);
 
+router.get('/search/:titre', Controll.search);
+
+
 // localhost:3000/api/agence/
 router.put('/', Controll.modifDesti);
 
