@@ -8,4 +8,4 @@ const schema = new Schema({
     image: { type: [String], },
 }, { timestamps: true });
 
-module.exports = Agence = mongoose.model('Agence', schema)
+module.exports = Agence = mongoose.model('Destination', schema)
