@@ -19,9 +19,9 @@ router.post('/', Controll.signup);
 router.post('/login', Controll.login);
 
 // localhost:3000/api/agence/
-router.put('/', Controll.modifAgence);
+router.put('/mofidAgence', Controll.modifAgence);
 
 // localhost:3000/api/agence/64c67e89651d776487275fe6
-router.delete('/:id', Controll.deleteAgence);
+router.delete('/delete/:id', Controll.deleteAgence);
 
 module.exports = router;
